@@ -56,6 +56,18 @@ img{max-width:100%;height:auto;display:block}
 .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.78rem;font-weight:500;margin-right:6px}
 .badge-hot{background:#ffe0d0;color:var(--orange)}
 .badge-new{background:#d0f0e0;color:#1a6b3a}
+.badge-mid{background:#e8e4f5;color:#4a3f8a}
+.article-count{font-size:.88rem;color:var(--text-light);margin-bottom:16px}
+.pagination{margin-top:36px;display:flex;justify-content:center}
+.pager-inner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.pager-btn{padding:8px 18px;border:1.5px solid var(--brown-mid);background:#fff;color:var(--brown-deep);border-radius:8px;font-size:.9rem;cursor:pointer;transition:all .2s;font-family:inherit}
+.pager-btn:hover:not(.disabled){background:var(--brown-deep);color:#fff;border-color:var(--brown-deep)}
+.pager-btn.disabled{opacity:.4;cursor:not-allowed}
+.pager-nums{display:flex;gap:4px;align-items:center}
+.pager-num{min-width:36px;height:36px;padding:0 8px;border:1.5px solid var(--border);background:#fff;color:var(--text-mid);border-radius:8px;font-size:.88rem;cursor:pointer;transition:all .2s;font-family:inherit}
+.pager-num:hover{border-color:var(--orange);color:var(--orange)}
+.pager-num.active{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.pager-ellipsis{color:var(--text-light);padding:0 2px}
 </style>
 </head>
 <body>
@@ -115,7 +127,9 @@ img{max-width:100%;height:auto;display:block}
 <section class="section-block" style="background:var(--brown-pale)">
 <div class="container">
 <h2>最新文章</h2>
+<p class="article-count" id="article-count"></p>
 <div class="grid" id="article-grid"></div>
+<div class="pagination" id="pagination"></div>
 </div>
 </section>
 
@@ -126,46 +140,8 @@ img{max-width:100%;height:auto;display:block}
 </div>
 </footer>
 
-<script>
-const articles = [
-{slug:"hangqing-20261016",title:"2026年10月16日香菇批发市场行情汇总",excerpt:"广州江南市场鲜菇均价8-12元/kg，北京新发地10-15元/kg，郑州万邦9-13元/kg。北方产区因阶段性出菇减少，价格小幅上涨。",date:"2026-10-16",tags:["行情"]},
-{slug:"suzhou-changjian",title:"湖北随州香菇产业全景：全产业链产值近500亿元",excerpt:"随州香菇品牌价值205.8亿元，连续三年位居全国食用菌地理标志价值首位。种植规模近4亿袋，全产业链年产值近500亿元。",date:"2026-10-15",tags:["产区"]},
-{slug:"xixia-changjian",title:"河南西峡香菇：全国产量第一县的产业之路",excerpt:"西峡县2025年香菇产量120万吨，是全国最大的香菇生产基地。从传统砍花法到现代袋料栽培，西峡实现了产业升级。",date:"2026-10-14",tags:["产区"]},
-{slug:"gutan-changjian",title:"福建古田香菇：千年菌都的品牌崛起",excerpt:"古田县被誉为中国香菇之乡，拥有800余年香菇栽培历史。古田香菇以品质稳定著称，是出口日本、韩国的主要货源。",date:"2026-10-13",tags:["产区"]},
-{slug:"qingyuan-changjian",title:"浙江庆元：世界人工栽培香菇发源地",excerpt:"庆元县是吴三公发明砍花法的地方，被公认为世界香菇发源地。庆元香菇以高端干菇为主，品牌价值持续攀升。",date:"2026-10-12",tags:["产区"]},
-{slug:"lushi-changjian",title:"河南卢氏香菇：伏牛山麓的产业崛起",excerpt:"卢氏县位于伏牛山南麓，是河南重要的香菇生产基地。2025年产量达15万吨，年产值超20亿元。",date:"2026-10-16",tags:["产区"]},
-{slug:"huaihua-changjian",title:"湖南怀化香菇产区：武陵山区的绿色产业",excerpt:"怀化市位于湘西南，气候温和湿润，适宜香菇生长。2025年种植规模达8000万袋，产量30万吨。",date:"2026-10-15",tags:["产区"]},
-{slug:"jinzhai-changjian",title:"安徽金寨香菇：大别山地区的产业示范",excerpt:"金寨县是大别山革命老区，香菇产业是扶贫支柱产业。全县种植规模5000万袋，产值15亿元。",date:"2026-10-14",tags:["产区"]},
-{slug:"chanyexuan-jiangsu",title:"江苏如东香菇产业：沿海产区的崛起之路",excerpt:"江苏如东依托沿海区位优势，香菇种植规模快速扩张，成为华东重要供应基地。",date:"2026-10-21",tags:["产区"]},
-{slug:"chanyexuan-henan",title:"河南香菇产区巡礼：从西峡到卢氏的产业带",excerpt:"河南香菇产业带从西峡到卢氏连绵数百里，形成全国最大的香菇种植集群。",date:"2026-10-21",tags:["产区"]},
-{slug:"xingji-chuzhi",title:"香菇出口韩国市场分析：鲜菇需求持续增长",excerpt:"韩国市场以鲜菇消费为主，2025年受本国产量波动影响，进口需求增强。山东、河南等地鲜菇出口订单明显增长。",date:"2026-10-11",tags:["出口"]},
-{slug:"xingji-chuzhi-riben",title:"日本香菇进口标准与质量要求详解",excerpt:"日本市场对香菇品质要求严格，尤其对高等级花菇需求增加。出口企业需建立溯源体系，满足JAS认证要求。",date:"2026-10-10",tags:["出口"]},
-{slug:"jishu-yunbang",title:"香菇菌棒制作关键技术：原料配比与灭菌要点",excerpt:"集中制棒技术已推广超30亿棒，人力成本和时间成本减少30%。菌棒成品率可达99%，关键在原料配比和灭菌工艺。",date:"2026-10-09",tags:["技术"]},
-{slug:"jishu-chuguanli",title:"香菇出菇期环境调控：温湿度与通风管理",excerpt:"智能菇房通过精准调控温湿度、CO2浓度，配合自动喷灌和通风系统，使单产提升17%-23%，能耗降低约30%。",date:"2026-10-08",tags:["技术"]},
-{slug:"jishu-bingchong",title:"香菇常见病虫害识别与综合防治方法",excerpt:"绿霉病、木霉、竞争菌等是香菇主要病害，红蜘蛛、菇蚊是主要虫害。掌握识别要点，科学防治是关键。",date:"2026-10-07",tags:["技术"]},
-{slug:"jishu-caigou",title:"香菇采收与初加工技术：干菇与鲜菇处理",excerpt:"采收时机决定品质，干制温度80-90℃最佳。鲜菇冷链运输损耗率降至3%以内，品牌溢价显著提升。",date:"2026-10-06",tags:["技术"]},
-{slug:"jishu-zhineng",title:"智能菇房建设指南：自动化控制与数据管理",excerpt:"智能菇房集成环境传感器、自动喷灌与通风系统，实现远程监控与精准管理，是产业升级方向。",date:"2026-10-21",tags:["技术"]},
-{slug:"jishu-lvyang",title:"液氮菌种技术：香菇产业的未来方向",excerpt:"液氮保存菌种技术已在国内多家龙头企业应用，菌种活力保持期延长至5-8年，降低种质资源流失风险。",date:"2026-10-13",tags:["技术"]},
-{slug:"jishu-youji",title:"有机香菇认证流程与标准要求",excerpt:"有机认证需满足土壤、水源、大气等多项标准，转换期2-3年，认证成本约5-10万元，溢价空间30-50%。",date:"2026-10-12",tags:["技术"]},
-{slug:"jishu-ganzao",title:"香菇干制技术对比：太阳能vs热泵vs隧道式",excerpt:"太阳能干燥成本低但受天气影响，热泵干燥能耗降低40%，隧道式干燥效率最高但投资较大。",date:"2026-10-11",tags:["技术"]},
-{slug:"shichang-fenxi",title:"2026年香菇市场走势分析：产地缺货与终端滞销并存",excerpt:"2026年香菇市场呈现结构性矛盾：产地优质鲜菇缺货，但终端市场低端货积压。小农种植模式难以适配市场化节奏是根源。",date:"2026-10-07",tags:["市场"]},
-{slug:"shichang-fenxi-jia",title:"香菇价格走势深度解读：供需错配的深层原因",excerpt:"全国28个统计省份中，仅10个省份鲜菇价格同比上涨。广西、上海、福建跌幅居前，分别达33%、28%、28%。",date:"2026-10-06",tags:["市场"]},
-{slug:"shichang-chuwen",title:"香菇深加工产业趋势：从干菇到功能食品",excerpt:"深加工提升产品附加值，香菇多糖提取、即食食品、调味品等赛道快速增长。",date:"2026-10-21",tags:["市场"]},
-{slug:"shichang-duongzhi",title:"香菇品牌建设：从产地到品牌的溢价路径",excerpt:"古田香菇品牌价值超150亿元，随州香菇品牌205.8亿元。品牌溢价可达30-50%，关键在于品质稳定性和故事讲述。",date:"2026-10-10",tags:["市场"]},
-{slug:"shichang-dianshang",title:"香菇电商销售渠道分析：平台vs直播vs社群",excerpt:"电商平台占香菇线上销售60%，直播带货增速最快，社区团购适合本地市场，三者各有优势。",date:"2026-10-09",tags:["市场"]},
-{slug:"shichang-jiage",title:"香菇价格指数编制方法与应用",excerpt:"基于全国28个批发市场数据编制的香菇价格指数，可反映市场趋势，为生产者提供定价参考。",date:"2026-10-08",tags:["市场"]},
-{slug:"zixun-xinzhengce",title:"2026年食用菌产业政策：智能装备纳入农机补贴",excerpt:"国家将液菌种、智能装备列为重点攻关方向，菌棒生产线被纳入农机补贴目录，设备采购成本降低40%。",date:"2026-10-05",tags:["政策"]},
-{slug:"zixun-zhengce-2026",title:"2026年食用菌产业政策全景解读",excerpt:"从中央一号文件到农机补贴，2026年食用菌产业迎来政策密集支持期。",date:"2026-10-21",tags:["政策"]},
-{slug:"zixun-rcep",title:"RCEP对香菇出口的影响与机遇",excerpt:"RCEP生效后，香菇出口东盟关税逐步降至零，韩国、日本市场准入门槛降低，出口企业迎来新机遇。",date:"2026-10-07",tags:["政策"]}
-];
 
-const grid = document.getElementById("article-grid");
-articles.forEach(a => {
-const card = document.createElement("div");
-card.className = "article-card";
-card.innerHTML = "<div class='card-body'><div class='card-meta'>" + a.date + " <span class='badge badge-hot'>" + a.tags[0] + "</span></div><h3><a href='/articles/" + a.slug + ".html'>" + a.title + "</a></h3><p class='card-excerpt'>" + a.excerpt + "</p></div>";
-grid.appendChild(card);
-});
-</script>
+<script src="/assets/articles-data.js"></script>
+<script src="/assets/home.js"></script>
 </body>
 </html>
